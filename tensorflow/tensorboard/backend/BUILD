@@ -7,6 +7,8 @@ licenses(["notice"])  # Apache 2.0
 
 exports_files(["LICENSE"])
 
+load("//tensorflow:tensorflow.bzl", "py_test")
+
 py_library(
     name = "application",
     srcs = ["application.py"],
@@ -15,8 +17,11 @@ py_library(
     deps = [
         ":process_graph",
         "//tensorflow/python:platform",
-        "//tensorflow/python:summary",
+        "//tensorflow/tensorboard/backend/event_processing:event_accumulator",
+        "//tensorflow/tensorboard/backend/event_processing:event_multiplexer",
         "//tensorflow/tensorboard/lib/python:http_util",
+        "//tensorflow/tensorboard/plugins/debugger:debugger_plugin",
+        "//tensorflow/tensorboard/plugins/projector:projector_plugin",
         "@org_pocoo_werkzeug//:werkzeug",
         "@six_archive//:six",
     ],
@@ -33,14 +38,10 @@ py_test(
         "//tensorflow/python:client",
         "//tensorflow/python:client_testlib",
         "//tensorflow/python:framework_for_generated_wrappers",
-        "//tensorflow/python:init_ops",
         "//tensorflow/python:platform",
         "//tensorflow/python:summary",
         "//tensorflow/python:training",
-        "//tensorflow/python:variable_scope",
-        "//tensorflow/python:variables",
-        "//tensorflow/tensorboard:projector",
-        "//third_party/py/numpy",
+        "//tensorflow/tensorboard/backend/event_processing:event_multiplexer",
         "@org_pocoo_werkzeug//:werkzeug",
     ],
 )

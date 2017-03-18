@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import print_function
 
 import inspect
+import re
 
 
 class PublicAPIVisitor(object):
@@ -40,6 +41,8 @@ class PublicAPIVisitor(object):
   # Each entry maps a module path to a name to ignore in traversal.
   _do_not_descend_map = {
       '': [
+          'core',
+          'examples',
           'flags',  # Don't add flags
           'platform',  # TODO(drpng): This can be removed once sealed off.
           'pywrap_tensorflow',  # TODO(drpng): This can be removed once sealed.
@@ -47,9 +50,6 @@ class PublicAPIVisitor(object):
           'python',
           'tools'
       ],
-
-      # Exclude protos, they leak a lot.
-      'core': ['protobuf'],
 
       # Some implementations have this internal module that we shouldn't expose.
       'flags': ['cpp_flags'],
@@ -73,8 +73,9 @@ class PublicAPIVisitor(object):
 
   def _isprivate(self, name):
     """Return whether a name is private."""
-    # TODO(wicke): We have to almost certainly add more exceptions than init.
-    return name.startswith('_') and name not in ['__init__']
+    # TODO(wicke): Find out what names to exclude.
+    return (name.startswith('_') and not re.match('__.*__$', name) or
+            name in ['__base__', '__class__'])
 
   def _do_not_descend(self, path, name):
     """Safely queries if a specific fully qualified name should be excluded."""
